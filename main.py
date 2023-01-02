@@ -38,6 +38,14 @@ for i in range(2):
     airplane_image = scale_image(airplane_image, 70)
     airplane_images.append(airplane_image)
 
+heart_images = []
+heart_image_index = 0
+for i in range(8):
+    heart_image = pygame.image.load(f'images/hearts/heart{i}.png').convert_alpha()
+    heart_image = scale_image(heart_image, 30)
+    heart_images.append(heart_image)
+
+
 bird_colors = ['blue', 'grey', 'red', 'yellow']
 bird_images = {}
 for bird_color in bird_colors:
@@ -178,6 +186,21 @@ while running:
 
     bird_group.update()
     bird_group.draw(game_window)
+
+    for i in range(player.lives):
+        heart_image = heart_images[int(heart_image_index)]
+        heart_x = 10 + i * (heart_image.get_width() + 10)
+        heart_y = 10
+        game_window.blit(heart_image, (heart_x, heart_y))
+    heart_image_index += 0.1
+    if heart_image_index >= len((heart_images)):
+        heart_image_index = 0
+
+    font = pygame.font.Font(pygame.font.get_default_font(), 16)
+    text = font.render(f'Score: {player.score}', True, black)
+    text_rect = text.get_rect()
+    text_rect.center = (200, 20)
+    game_window.blit(text, text_rect)
 
     pygame.display.update()
 pygame.quit()
