@@ -4,28 +4,45 @@ import random
 
 pygame.init()
 
-class DrawInformation:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-        self.window = pygame.display.set_mode((width, height))
-        pygame.display.set_caption("BirdPlane")
+game_width = 800
+game_height = 500
+screen_size = (game_width, game_height)
+game_window = pygame.display.set_mode(screen_size)
+pygame.display.set_caption("BirdPlane")
+padding_y = 50
 
-        BLACK = 0, 0, 0
-        RED = 255, 0, 0
-        YELLOW = 255, 255, 0
+black = (0, 0, 0)
+white = (255, 255, 255)
+red = (255, 0, 0)
+yellow = (255, 255, 0)
 
-def main():
-    run = True
-    clock = pygame.time.Clock()
-    draw_info = DrawInformation(1600, 800)
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-        pygame.display.update()
-    pygame.quit()
+def scale_image(image, new_width):
+    image_scale = new_width / image.get_rect().width
+    new_height = image.get_rect().height * image_scale
+    scaled_size = (new_width, new_height)
+    return pygame.transform.scale(image, scaled_size)
 
 
-if __name__ == "__main__":
-    main()
+class Player(pygame.sprite.Sprite):
+    pass
+
+class Bullet(pygame.sprite.Sprite):
+    pass
+
+class Bird(pygame.sprite.Sprite):
+    pass
+
+player_group = pygame.sprite.Group()
+bullet_group = pygame.sprite.Group()
+bird_group = pygame.sprite.Group()
+
+clock = pygame.time.Clock()
+fps = 60
+running = True
+while running:
+    clock.tick(fps)
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            running = False
+    pygame.display.update()
+pygame.quit()
