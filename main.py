@@ -20,7 +20,7 @@ bullet_cooldown = 500
 
 last_bullet_time = pygame.time.get_ticks()
 
-
+next_bird = pygame.time.get_ticks()
 
 def scale_image(image, new_width):
     image_scale = new_width / image.get_rect().width
@@ -38,6 +38,17 @@ for i in range(2):
     airplane_image = scale_image(airplane_image, 70)
     airplane_images.append(airplane_image)
 
+bird_colors = ['blue', 'grey', 'red', 'yellow']
+bird_images = {}
+for bird_color in bird_colors:
+    bird_images[bird_color] = []
+    for i in range(4):
+        bird_image = pygame.image.load(f'images/birds/{bird_color}{i}.png').convert_alpha()
+        bird_image = scale_image(bird_image, 50)
+
+        bird_image = pygame.transform.flip(bird_image, True, False)
+
+        bird_images[bird_color].append(bird_image)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -85,7 +96,31 @@ class Bullet(pygame.sprite.Sprite):
 
 
 class Bird(pygame.sprite.Sprite):
-    pass
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = game_width
+        self.y = random.randint(padding_y, game_height - padding_y * 2)
+        self.color = random.choice(bird_colors)
+        self.image_index = 0
+        self.image = bird_images[self.color][self.image_index]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+    def update(self):
+        self.x -= 2
+        self.image_index += 0.25
+        if self.image_index >= len(bird_images[self.color]):
+            self.image_index = 0
+
+        self.image = bird_images[self.color][int(self.image_index)]
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+        if pygame.sprite.spritecollide(self, bullet_group, True):
+            self.kill()
+            player.score += 1
+        if self.x < 0:
+            self.kill()
 
 player_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
@@ -123,6 +158,11 @@ while running:
         bullet_group.add(bullet)
         last_bullet_time = pygame.time.get_ticks()
 
+    if next_bird < pygame.time.get_ticks():
+        bird = Bird()
+        bird_group.add(bird)
+        next_bird = random.randint(pygame.time.get_ticks(), pygame.time.get_ticks() + 3000)
+
     game_window.blit(bg, (0 - bg_scroll, 0))
     game_window.blit(bg, (game_width - bg_scroll, 0))
     bg_scroll += 1
@@ -135,6 +175,9 @@ while running:
     bullet_group.update()
     for bullet in bullet_group:
         bullet.draw()
+
+    bird_group.update()
+    bird_group.draw(game_window)
 
     pygame.display.update()
 pygame.quit()
