@@ -140,7 +140,7 @@ player = Player(player_x, player_y)
 player_group.add(player)
 
 clock = pygame.time.Clock()
-fps = 60
+fps = 120
 running = True
 while running:
     clock.tick(fps)
@@ -203,4 +203,32 @@ while running:
     game_window.blit(text, text_rect)
 
     pygame.display.update()
+
+    while player.lives == 0:
+        clock.tick(fps)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+
+        gameover_str = f'Game Over. Play again? (y or n)'
+        font = pygame.font.Font(pygame.font.get_default_font(), 24)
+        text = font.render(gameover_str, True, red)
+        text_rect = text.get_rect()
+        text_rect.center = (game_width / 2, game_height / 2)
+        game_window.blit(text, text_rect)
+
+        keys = pygame.key.get_pressed()
+        if keys[K_y]:
+            player_group.empty()
+            bullet_group.empty()
+            bird_group.empty()
+
+            player = Player(player_x, player_y)
+            player_group.add(player)
+
+        elif keys[K_n]:
+            running = False
+            break
+
+        pygame.display.update()
 pygame.quit()
