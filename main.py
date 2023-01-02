@@ -16,6 +16,12 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 yellow = (255, 255, 0)
 
+bullet_cooldown = 500
+
+last_bullet_time = pygame.time.get_ticks()
+
+
+
 def scale_image(image, new_width):
     image_scale = new_width / image.get_rect().width
     new_height = image.get_rect().height * image_scale
@@ -56,7 +62,27 @@ class Player(pygame.sprite.Sprite):
             self.lives -= 1
 
 class Bullet(pygame.sprite.Sprite):
-    pass
+    def __init__(self, x, y):
+
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.radius = 5
+
+        self.rect = Rect(x, y, 10, 10)
+
+    def draw(self):
+        pygame.draw.circle(game_window, yellow, (self.x, self.y), self.radius)
+
+    def update(self):
+        self.x += 2
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        if self.x > game_width:
+            self.kill()
+
+
 
 class Bird(pygame.sprite.Sprite):
     pass
@@ -90,6 +116,13 @@ while running:
     else:
         player.image_angle = 0
 
+    if keys[K_SPACE] and last_bullet_time + bullet_cooldown < pygame.time.get_ticks():
+        bullet_x = player.x + player.image.get_width()
+        bullet_y = player.y + player.image.get_height() // 2
+        bullet = Bullet(bullet_x, bullet_y)
+        bullet_group.add(bullet)
+        last_bullet_time = pygame.time.get_ticks()
+
     game_window.blit(bg, (0 - bg_scroll, 0))
     game_window.blit(bg, (game_width - bg_scroll, 0))
     bg_scroll += 1
@@ -99,6 +132,9 @@ while running:
     player_group.update()
     player_group.draw(game_window)
 
+    bullet_group.update()
+    for bullet in bullet_group:
+        bullet.draw()
 
     pygame.display.update()
 pygame.quit()
