@@ -22,7 +22,9 @@ def scale_image(image, new_width):
     scaled_size = (new_width, new_height)
     return pygame.transform.scale(image, scaled_size)
 
-
+bg = pygame.image.load('images/BG.png').convert_alpha()
+bg = scale_image(bg, game_width)
+bg_scroll = 0
 class Player(pygame.sprite.Sprite):
     pass
 
@@ -44,5 +46,12 @@ while running:
     for event in pygame.event.get():
         if event.type == QUIT:
             running = False
+
+    game_window.blit(bg, (0 - bg_scroll, 0))
+    game_window.blit(bg, (game_width - bg_scroll, 0))
+    bg_scroll += 1
+    if bg_scroll == game_width:
+        bg_scroll = 0
+
     pygame.display.update()
 pygame.quit()
