@@ -83,8 +83,12 @@ while running:
 
     if keys[K_UP] and player.rect.top > padding_y:
         player.y -= 2
+        player.image_angle = 15
     elif keys[K_DOWN] and player.rect.bottom < game_height - padding_y:
         player.y += 2
+        player.image_angle = -15
+    else:
+        player.image_angle = 0
 
     game_window.blit(bg, (0 - bg_scroll, 0))
     game_window.blit(bg, (game_width - bg_scroll, 0))
